@@ -24,7 +24,7 @@ void RenderScene(void)
 
 	// Renderer Test
 	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	g_Renderer2->DrawSolidRect(1, 1, 1, 40,1,0,1,1);
+	g_Renderer2->DrawSolidRect2(20, 111, 13, 20,1,0,1,1);
 	glutSwapBuffers();
 }
 
@@ -69,6 +69,7 @@ int main(int argc, char **argv)
 
 	// Initialize Renderer
 	g_Renderer = new Renderer(500, 500);
+	g_Renderer2 = new newObject(500, 500);
 	if (!g_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
 	glutMainLoop();
 
 	delete g_Renderer;
-
+	delete g_Renderer2;
     return 0;
 }
 
