@@ -13,10 +13,13 @@ class newObject{
 public:
 	newObject(int windowSizeX, int windowSizeY);
 	~newObject();
-
 	bool IsInitialized();
-	void DrawSolidRect2(float x, float y, float z, float size, float r, float g, float b, float a);
+	void DrawSolidRect2();
+	void update();
+	float xpos = 0;
+	float ypos = 0;
 private:
+	
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);

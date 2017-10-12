@@ -159,11 +159,15 @@ GLuint newObject::CompileShaders(char* filenameVS, char* filenameFS)
 	return ShaderProgram;
 }
 
-void newObject::DrawSolidRect2(float x, float y, float z, float size, float r, float g, float b, float a)
+void newObject::DrawSolidRect2()
 {
 	float newX, newY;
-
-	GetGLPosition(x, y, &newX, &newY);
+	float r = 1;
+	float g = 1;
+	float b = 0.5;
+	float a = 1;
+	float size = 30;
+	GetGLPosition(xpos, ypos, &newX, &newY);
 
 	//Program select
 	glUseProgram(m_SolidRectShader);
@@ -187,4 +191,12 @@ void newObject::GetGLPosition(float x, float y, float *newX, float *newY)
 {
 	*newX = x * 2.f / m_WindowSizeX;
 	*newY = y * 2.f / m_WindowSizeY;
+}
+
+void newObject::update()
+{
+	if(xpos>-250)
+		xpos = xpos-0.1;
+	
+	
 }
