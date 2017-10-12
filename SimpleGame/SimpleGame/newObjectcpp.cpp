@@ -167,8 +167,9 @@ void newObject::DrawSolidRect2()
 	float b = 0.5;
 	float a = 1;
 	float size = 30;
+	
 	GetGLPosition(xpos, ypos, &newX, &newY);
-
+	
 	//Program select
 	glUseProgram(m_SolidRectShader);
 
@@ -195,8 +196,9 @@ void newObject::GetGLPosition(float x, float y, float *newX, float *newY)
 
 void newObject::update()
 {
-	if(xpos>-250)
-		xpos = xpos-0.1;
+	
+	if (xpos < 250)
+		xpos = xpos - 0.1;
 	
 	
 }

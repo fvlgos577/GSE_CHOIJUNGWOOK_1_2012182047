@@ -17,6 +17,7 @@ but WITHOUT ANY WARRANTY.
 #include "newObject.h"
 Renderer *g_Renderer = NULL;
 newObject *g_Renderer2 = NULL;
+int check = 0;
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -36,6 +37,18 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
+	if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN&&check ==0) {
+		check = 1;
+	
+
+	}
+	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP&&check ==1) {
+		check = 0;
+		g_Renderer2->xpos = x;
+		g_Renderer2->ypos = y;
+
+	}
+
 	RenderScene();
 }
 
