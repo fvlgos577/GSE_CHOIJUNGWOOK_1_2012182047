@@ -15,8 +15,10 @@ but WITHOUT ANY WARRANTY.
 
 #include "Renderer.h"
 #include "newObject.h"
+#include "SceneMgr.h"
 Renderer *g_Renderer = NULL;
 newObject *g_Renderer2 = NULL;
+SceneMgr *sceneMgr;
 int check = 0;
 void RenderScene(void)
 {
@@ -24,9 +26,10 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	// Renderer Test
+
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	g_Renderer2->DrawSolidRect2();
-	g_Renderer2->update();
+	sceneMgr->DrawRect();
+	sceneMgr->AllUpdate();
 	glutSwapBuffers();
 }
 
@@ -44,9 +47,9 @@ void MouseInput(int button, int state, int x, int y)
 	}
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP&&check ==1) {
 		check = 0;
-		g_Renderer2->xpos = x;
-		g_Renderer2->ypos = y;
-
+		sceneMgr->setxy(x, y, sceneMgr->num);
+		sceneMgr->num++;
+		
 	}
 
 	RenderScene();
@@ -84,6 +87,7 @@ int main(int argc, char **argv)
 	// Initialize Renderer
 	g_Renderer = new Renderer(500, 500);
 	g_Renderer2 = new newObject(500, 500);
+	
 	if (!g_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
