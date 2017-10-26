@@ -16,10 +16,11 @@ but WITHOUT ANY WARRANTY.
 #include "Renderer.h"
 #include "newObject.h"
 #include "SceneMgr.h"
-Renderer *g_Renderer = NULL;
-newObject *g_Renderer2 = NULL;
-SceneMgr *sceneMgr;
+
+SceneMgr *sceneMgr = NULL;
+
 int check = 0;
+int num = 0;
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -28,8 +29,7 @@ void RenderScene(void)
 	// Renderer Test
 
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	sceneMgr->DrawRect();
-	sceneMgr->AllUpdate();
+	
 	glutSwapBuffers();
 }
 
@@ -47,8 +47,9 @@ void MouseInput(int button, int state, int x, int y)
 	}
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP&&check ==1) {
 		check = 0;
-		sceneMgr->setxy(x, y, sceneMgr->num);
-		sceneMgr->num++;
+		num++;
+		sceneMgr->setxy(x, y, sceneMgr->getNum());
+		sceneMgr->setNum(num);
 		
 	}
 
@@ -85,13 +86,9 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	g_Renderer2 = new newObject(500, 500);
 	
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
+
+
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -101,8 +98,7 @@ int main(int argc, char **argv)
 
 	glutMainLoop();
 
-	delete g_Renderer;
-	delete g_Renderer2;
+	
     return 0;
 }
 

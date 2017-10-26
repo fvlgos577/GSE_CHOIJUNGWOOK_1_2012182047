@@ -6,15 +6,19 @@
 
 class SceneMgr
 {
+private:
+	int num;
 public:
-	newObject draw_Object[MAX_OBJECTS_COUNT];
-	SceneMgr();
+	newObject *draw_Object[MAX_OBJECTS_COUNT];
+	SceneMgr(int windowSizeX, int windowSizeY);
 	~SceneMgr();
-	int num = 0;
+	
 	void setxy(int x, int y, int i);
 	void AllUpdate();
 	void DrawRect();
-private:
+	void setNum(int num);
+	int getNum();
+
 	
 };
 
