@@ -10,6 +10,8 @@ but WITHOUT ANY WARRANTY.
 
 #include "stdafx.h"
 #include <iostream>
+#include "windows.h"
+
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
@@ -20,16 +22,22 @@ but WITHOUT ANY WARRANTY.
 SceneMgr *sceneMgr = NULL;
 
 int check = 0;
-int num = 0;
+
+DWORD g_prevTime = 0;
+
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
+	DWORD currTime = timeGetTime();
+	DWORD elapsedTime = currTime - g_prevTime;
+	g_prevTime = currTime;
+
+	sceneMgr->AllUpdate((float)elapsedTime);
+	sceneMgr->DrawRect();
 	// Renderer Test
 
-	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	
 	glutSwapBuffers();
 }
 
@@ -47,10 +55,7 @@ void MouseInput(int button, int state, int x, int y)
 	}
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP&&check ==1) {
 		check = 0;
-		num++;
-		sceneMgr->setxy(x, y, sceneMgr->getNum());
-		sceneMgr->setNum(num);
-		
+		sceneMgr->setxy(x-250, -y + 250);
 	}
 
 	RenderScene();
@@ -88,17 +93,20 @@ int main(int argc, char **argv)
 	// Initialize Renderer
 	
 
-
-
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyInput);
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
 
-	glutMainLoop();
+	sceneMgr = new SceneMgr(500, 500);
+
+	g_prevTime = timeGetTime();
 
 	
+
+	glutMainLoop();
+	delete sceneMgr;
     return 0;
 }
 
