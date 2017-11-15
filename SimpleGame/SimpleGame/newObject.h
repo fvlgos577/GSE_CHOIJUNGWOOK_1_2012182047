@@ -13,16 +13,14 @@ private:
 	
 
 public:
-	newObject(float x, float y, int lf, float sp, int si);
+	newObject(float x, float y, float lf, float sp, int si, int ty, int i);
 	~newObject();
 	// 렌더러 포인터
-	void SetState(int state);
-	void SetRender(Renderer* pRenderer);
-	void SetSpeed(float inputSpeed);
-	void AddSpeed(float addSpeed);
+	
 
 	float GetLife();
 	float GetLifeTime();
+	float SetLife();
 
 	float xpos;
 	float ypos;
@@ -36,8 +34,12 @@ public:
 	float b;
 	float a;
 
+	int type;
 	float life;
 	float lifetime;
+	float delay;
+	float damage;
+	int id;
 
 	float size;		// 사이즈 
 
@@ -45,9 +47,10 @@ public:
 	float	GetSize() { return size; }
 	float	GetSpeed() { return speed; }
 	float   GetWeight() { return weight; }
+	void	setColor(int type);
 
-
-	void	DrawnewObject();
+	void	CheckTime(float elapsedTime);
+	void	resetTime();
 	void	Update(float elapsedTime);
 };
 

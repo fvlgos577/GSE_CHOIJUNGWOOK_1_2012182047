@@ -32,8 +32,7 @@ void RenderScene(void)
 
 	DWORD currTime = timeGetTime();
 	DWORD elapsedTime = currTime - g_prevTime;
-	g_prevTime = currTime;
-
+	g_prevTime = currTime;	
 	sceneMgr->AllUpdate((float)elapsedTime);
 	sceneMgr->DrawRect();
 	// Renderer Test

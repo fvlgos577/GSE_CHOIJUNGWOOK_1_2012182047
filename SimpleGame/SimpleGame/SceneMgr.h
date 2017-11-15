@@ -2,7 +2,7 @@
 
 #include "newObject.h"
 #include <stdio.h>
-#define MAX_OBJECTS_COUNT 100
+#define MAX_OBJECTS_COUNT 200
 
 class SceneMgr
 {
@@ -18,12 +18,17 @@ private:
 	
 public:
 	newObject *draw_Object[MAX_OBJECTS_COUNT];
+	
 	SceneMgr(int windowSizeX, int windowSizeY);
 	~SceneMgr();
 	int num=0;
 	void setxy(int x, int y);
 	void AllUpdate(float elapsedTime);
 	void DrawRect();
+	void AddActorObject(int x, int y, int type, int id);
+
+	void makeArrow(int x, int y, int id);
+
 	
 	
 };
