@@ -2,7 +2,7 @@
 #include "newObject.h"
 #include "Renderer.h"
 
-newObject::newObject(float x, float y, float lf, float sp,int si, int ty,int i)
+newObject::newObject(float x, float y, float lf, float sp,int si, int ty,int i , int ti)
 {
 	xpos = x;
 	ypos = y;
@@ -15,9 +15,9 @@ newObject::newObject(float x, float y, float lf, float sp,int si, int ty,int i)
 	g = 1;
 	b = 1;
 	a = 1;
-
-	type = ty;
 	id = i;
+	type = ty;
+	team = ti;
 	life = lf;
 	lifetime = 10000000.f;
 }
@@ -42,12 +42,12 @@ void newObject::Update(float elapsedTime)
 		vxpos = -vxpos;
 	}
 
-	if (ypos > 250)
+	if (ypos > 400)
 	{
 		vypos = -vypos;
 	}
 
-	if (ypos < -250)
+	if (ypos < -400)
 	{
 		vypos = -vypos;
 	}	
@@ -70,41 +70,61 @@ float newObject::SetLife()
 	return life;
 }
 
-void newObject::setColor(int type)
+void newObject::setColor(int ty)
 {
-	if (type == 1)
+	switch (ty)
 	{
-		r = 1;
-		g = 1;
-		b = 1;
-	}
-	else if (type == 2)
-	{
-		r = 0;
-		g = 0.5;
-		b = 1;
-	}
-	else if (type == 4)
-	{
-		if (id < 10)
+	case 1:
+		if (team == 1)
 		{
-			r = 1;
-			g = 0;
-			b = 1;
+			r = 1.0f;
+			g = 0.0f;
+			b = 0.0f;
 		}
 		else
 		{
-			r = 0.2;
-			g = 0;
-			b = 1;
+			r = 0.0f;
+			g = 0.0f;
+			b = 1.0f;
 		}
+		
+		break;
+	case 2:
+		r = 0.0f;
+		g = 0.0f;
+		b = 0.0f;
+		break;
+	case 3:
+		if (team == 1)
+		{
+			r = 1.0f;
+			g = 0.0f;
+			b = 0.0f;
+		}
+		else
+		{
+			r = 0.0f;
+			g = 0.0f;
+			b = 1.0f;
+		}
+		break;
+	case 4:
+		if (team == 1)
+		{
+			r = 0.5f;
+			g = 0.2f;
+			b = 0.7f;
+		}
+		else
+		{
+			r = 1.0f;
+			g = 1.0f;
+			b = 0.0f;
+		}
+		break;
 	}
-	else
-	{
-		r = 0;
-		g = 0;
-		b = 0;
-	}
+
+
 }
 
 void newObject::CheckTime(float elapsedTime)

@@ -2,7 +2,7 @@
 
 #include "newObject.h"
 #include <stdio.h>
-#define MAX_OBJECTS_COUNT 200
+#define MAX_OBJECTS_COUNT 500
 
 class SceneMgr
 {

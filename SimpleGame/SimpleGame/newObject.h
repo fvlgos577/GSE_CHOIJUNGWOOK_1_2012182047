@@ -13,7 +13,7 @@ private:
 	
 
 public:
-	newObject(float x, float y, float lf, float sp, int si, int ty, int i);
+	newObject(float x, float y, float lf, float sp, int si, int ty, int i ,int ti);
 	~newObject();
 	// 렌더러 포인터
 	
@@ -39,6 +39,7 @@ public:
 	float lifetime;
 	float delay;
 	float damage;
+	int team;
 	int id;
 
 	float size;		// 사이즈 

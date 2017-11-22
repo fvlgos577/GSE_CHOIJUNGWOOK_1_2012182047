@@ -24,14 +24,15 @@ SceneMgr *sceneMgr = NULL;
 int check = 0;
 
 DWORD g_prevTime = 0;
-
+DWORD elapsedTime = 0;
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	DWORD currTime = timeGetTime();
-	DWORD elapsedTime = currTime - g_prevTime;
+	elapsedTime = currTime - g_prevTime;
+
 	g_prevTime = currTime;	
 	sceneMgr->AllUpdate((float)elapsedTime);
 	sceneMgr->DrawRect();
@@ -54,7 +55,7 @@ void MouseInput(int button, int state, int x, int y)
 	}
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP&&check ==1) {
 		check = 0;
-		sceneMgr->setxy(x-250, -y + 250);
+		sceneMgr->setxy(x-250, -y + 400);
 	}
 
 	RenderScene();
@@ -76,7 +77,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(500, 800);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();
@@ -98,7 +99,7 @@ int main(int argc, char **argv)
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
 
-	sceneMgr = new SceneMgr(500, 500);
+	sceneMgr = new SceneMgr(500, 800);
 
 	g_prevTime = timeGetTime();
 

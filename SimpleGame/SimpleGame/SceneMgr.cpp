@@ -5,19 +5,26 @@
 #define MAX_OBJECTS_BUILDING_COUNT 10
 #define MAX_OBJECTS_BULLET_COUNT 10
 #define MAX_OBJECTS_ARROW_COUNT 10
-#define MAX_OBJECTS 200
+#define MAX_OBJECTS 500
 #define OBJECT_CHARACTER 1
 #define OBJECT_BUILDING 2
 #define OBJECT_BULLET 3
 #define OBJECT_ARROW 4
 
-float time = 0;
-GLuint textureID = 0;
+#define TEAM_1 1
+#define TEAM_2 2
+GLuint team1Texture = 0;
+GLuint team2Texture = 0;
+float collDownTime = 0;
+float collDownTime2 = 0;
+float ranXpos = 0;
+float ranYpos = 0;
 SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 {
 	// Initialize Renderer
 	renderer = new Renderer(windowSizeX, windowSizeY);
-	textureID = renderer->CreatePngTexture("./Textures/newbilding.png");
+	team1Texture = renderer->CreatePngTexture("./Textures/team1_building.png");
+	team2Texture = renderer->CreatePngTexture("./Textures/team2_building.png");
 	if (!renderer->IsInitialized())
 	{
 		std::cout << "SceneMgr::Renderer could not be initialized.. \n";
@@ -31,20 +38,39 @@ SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 		draw_Object[i] = NULL;
 		
 	}	
-	AddActorObject(0, 0, OBJECT_BUILDING,0);
+	for (int i = 0; i < 3; ++i)
+	{
+		AddActorObject((i*200) -200, -300, OBJECT_BUILDING, 0);
+		AddActorObject((i * 200) - 200, +300, OBJECT_BUILDING, 0);
+	}	
 }
 SceneMgr::~SceneMgr()
 {
 }
 void SceneMgr::setxy(int x, int y)
 {
-	AddActorObject(x, y, OBJECT_CHARACTER,0);
+	
+	if (collDownTime >= 7000 && y <0)
+	{
+		AddActorObject(x, y, OBJECT_CHARACTER, 0);
+		collDownTime = 0;
+	}
+	
 }
 
 void SceneMgr::AllUpdate(float elapsedTime)
 {
-	
+	collDownTime += elapsedTime;
 	DoCollisionTest();
+	collDownTime2 += elapsedTime;
+	//srand(100);
+	ranXpos = (rand() % 751) - 250;
+	ranYpos = (rand() % 401);
+	if (collDownTime2 > 5000)
+	{
+		AddActorObject(ranXpos, ranYpos, OBJECT_CHARACTER, 0);
+		collDownTime2 = 0;
+	}
 	
 	for (int i = 0; i < MAX_OBJECTS; i++)
 	{
@@ -52,10 +78,16 @@ void SceneMgr::AllUpdate(float elapsedTime)
 		{
 			draw_Object[i]->SetLife();
 			draw_Object[i]->CheckTime(elapsedTime);
-			if (draw_Object[i]->type <=2 && draw_Object[i]->delay >= 500)
+			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->delay >= 10000)
 			{
 				
-				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_ARROW, i);				
+				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_BULLET, i);				
+				draw_Object[i]->resetTime();
+			}
+			if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->delay >= 3000)
+			{
+
+				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_ARROW, i);
 				draw_Object[i]->resetTime();
 			}
 			if (draw_Object[i]->GetLife() <0.0001f || draw_Object[i]->GetLifeTime() < 0.0001f)
@@ -65,8 +97,7 @@ void SceneMgr::AllUpdate(float elapsedTime)
 				draw_Object[i] = NULL;				
 			}
 			else
-			{
-				
+			{				
 				draw_Object[i]->Update(elapsedTime);
 			}
 			
@@ -80,35 +111,66 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 	
 	if (type == OBJECT_CHARACTER)
 	{
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 100; ++i)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 10.f, 300.f, 10, OBJECT_CHARACTER,i);
-				draw_Object[i]->setColor(OBJECT_CHARACTER);
-				break;
+				if (y < 0)
+				{
+					draw_Object[i] = new newObject(x, y, 10.f, 300.f, 10, OBJECT_CHARACTER, i, TEAM_1);
+					draw_Object[i]->setColor(OBJECT_CHARACTER);
+					break;
+				}
+				else
+				{
+					draw_Object[i] = new newObject(x, y, 10.f, 300.f, 10, OBJECT_CHARACTER, i, TEAM_2);
+					draw_Object[i]->setColor(OBJECT_CHARACTER);
+					break;
+				}
 			}
 		}
 	}		
 	if (type == OBJECT_BUILDING)
 	{
-		for (int i = 10; i < 20; ++i)
+		for (int i = 100; i < 120; ++i)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 500.f, 0, 50, OBJECT_BUILDING, i);
-				draw_Object[i]->setColor(OBJECT_BUILDING);
+				if (y < 0)
+				{
+					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_1);
+					draw_Object[i]->setColor(OBJECT_BUILDING);
+					break;
+				}
+				else
+				{
+					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_2);
+					draw_Object[i]->setColor(OBJECT_BUILDING);
+					break;
+				}
+				
+			}
+		}
+	}
+	if (type == OBJECT_BULLET)
+	{
+		for (int i = 120; i < 300; ++i)
+		{
+			if (draw_Object[i] == NULL)
+			{
+				draw_Object[i] = new newObject(x, y, 20, 600.f, 2, OBJECT_BULLET, id, draw_Object[id]->team);
+				draw_Object[i]->setColor(OBJECT_BULLET);
 				break;
 			}
 		}
 	}
 	if (type == OBJECT_ARROW)
 	{
-		for (int i = 30; i < MAX_OBJECTS; ++i)
+		for (int i = 300; i < MAX_OBJECTS; ++i)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 10, 100.f, 2, OBJECT_ARROW,id);
+				draw_Object[i] = new newObject(x, y, 10, 100.f, 2, OBJECT_ARROW,id, draw_Object[id]->team);
 				draw_Object[i]->setColor(OBJECT_ARROW);
 				break;
 			}
@@ -124,7 +186,7 @@ void SceneMgr::DrawRect()
 		
 		if (draw_Object[i] != NULL)
 		{			
-			if (draw_Object[i]->type == OBJECT_BUILDING)
+			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->team == TEAM_1)
 			{
 				renderer->DrawTexturedRect(
 					draw_Object[i]->xpos,
@@ -135,7 +197,20 @@ void SceneMgr::DrawRect()
 					draw_Object[i]->g,
 					draw_Object[i]->b,
 					draw_Object[i]->a,
-					textureID);
+					team1Texture);
+			}
+			else if(draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->team == TEAM_2)
+			{
+				renderer->DrawTexturedRect(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos,
+					draw_Object[i]->zpos,
+					draw_Object[i]->size,
+					draw_Object[i]->r,
+					draw_Object[i]->g,
+					draw_Object[i]->b,
+					draw_Object[i]->a,
+					team2Texture);
 			}
 			else
 			{
@@ -188,7 +263,7 @@ void SceneMgr::DoCollisionTest()
 					maxY1 = draw_Object[j]->ypos + draw_Object[j]->size / 2.f;
 					if (BoxBoxCollisionTest(minX, minY, maxX, maxY, minX1, minY1, maxX1, maxY1))
 					{
-						if (draw_Object[i]->id == draw_Object[j]->id)
+						if (draw_Object[i]->team == draw_Object[j]->team)
 							continue;
 						collisionCount++;
 						if (draw_Object[i]->id < 10 && draw_Object[j]->id < 10)
