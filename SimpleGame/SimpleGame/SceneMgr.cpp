@@ -11,10 +11,16 @@
 #define OBJECT_BULLET 3
 #define OBJECT_ARROW 4
 
+#define BULDING 0.1
+#define CHARACTER 0.2
+#define BULLET 0.3
+#define ARROW 0.3
 #define TEAM_1 1
 #define TEAM_2 2
-GLuint team1Texture = 0;
-GLuint team2Texture = 0;
+GLuint team1BuildingTexture = 0;
+GLuint team2BuildingTexture = 0;
+GLuint team1CharaterTexture = 0;
+GLuint team2CharaterTexture = 0;
 float collDownTime = 0;
 float collDownTime2 = 0;
 float ranXpos = 0;
@@ -23,8 +29,10 @@ SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 {
 	// Initialize Renderer
 	renderer = new Renderer(windowSizeX, windowSizeY);
-	team1Texture = renderer->CreatePngTexture("./Textures/team1_building.png");
-	team2Texture = renderer->CreatePngTexture("./Textures/team2_building.png");
+	team1BuildingTexture = renderer->CreatePngTexture("./Textures/team1_building.png");
+	team2BuildingTexture = renderer->CreatePngTexture("./Textures/team2_building.png");
+	team1CharaterTexture = renderer->CreatePngTexture("./Textures/team1_character.png");
+	team2CharaterTexture = renderer->CreatePngTexture("./Textures/team2_character.png");
 	if (!renderer->IsInitialized())
 	{
 		std::cout << "SceneMgr::Renderer could not be initialized.. \n";
@@ -50,7 +58,7 @@ SceneMgr::~SceneMgr()
 void SceneMgr::setxy(int x, int y)
 {
 	
-	if (collDownTime >= 7000 && y <0)
+	if (collDownTime >= 1000 && y <0)
 	{
 		AddActorObject(x, y, OBJECT_CHARACTER, 0);
 		collDownTime = 0;
@@ -66,7 +74,7 @@ void SceneMgr::AllUpdate(float elapsedTime)
 	//srand(100);
 	ranXpos = (rand() % 751) - 250;
 	ranYpos = (rand() % 401);
-	if (collDownTime2 > 5000)
+	if (collDownTime2 >= 1000)
 	{
 		AddActorObject(ranXpos, ranYpos, OBJECT_CHARACTER, 0);
 		collDownTime2 = 0;
@@ -78,13 +86,13 @@ void SceneMgr::AllUpdate(float elapsedTime)
 		{
 			draw_Object[i]->SetLife();
 			draw_Object[i]->CheckTime(elapsedTime);
-			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->delay >= 10000)
+			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->delay >= 500)
 			{
 				
 				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_BULLET, i);				
 				draw_Object[i]->resetTime();
 			}
-			if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->delay >= 3000)
+			if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->delay >= 500)
 			{
 
 				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_ARROW, i);
@@ -115,15 +123,15 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				if (y < 0)
+				if (y > 0)
 				{
-					draw_Object[i] = new newObject(x, y, 10.f, 300.f, 10, OBJECT_CHARACTER, i, TEAM_1);
+					draw_Object[i] = new newObject(x, y, 100.f, 300.f, 30, OBJECT_CHARACTER, i, TEAM_1);
 					draw_Object[i]->setColor(OBJECT_CHARACTER);
 					break;
 				}
 				else
 				{
-					draw_Object[i] = new newObject(x, y, 10.f, 300.f, 10, OBJECT_CHARACTER, i, TEAM_2);
+					draw_Object[i] = new newObject(x, y, 100.f, 300.f, 30, OBJECT_CHARACTER, i, TEAM_2);
 					draw_Object[i]->setColor(OBJECT_CHARACTER);
 					break;
 				}
@@ -136,7 +144,7 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				if (y < 0)
+				if (y > 0)
 				{
 					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_1);
 					draw_Object[i]->setColor(OBJECT_BUILDING);
@@ -158,7 +166,7 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 20, 600.f, 2, OBJECT_BULLET, id, draw_Object[id]->team);
+				draw_Object[i] = new newObject(x, y, 15, 600.f, 4, OBJECT_BULLET, id, draw_Object[id]->team);
 				draw_Object[i]->setColor(OBJECT_BULLET);
 				break;
 			}
@@ -170,7 +178,7 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 10, 100.f, 2, OBJECT_ARROW,id, draw_Object[id]->team);
+				draw_Object[i] = new newObject(x, y, 10, 100.f, 4, OBJECT_ARROW,id, draw_Object[id]->team);
 				draw_Object[i]->setColor(OBJECT_ARROW);
 				break;
 			}
@@ -197,7 +205,19 @@ void SceneMgr::DrawRect()
 					draw_Object[i]->g,
 					draw_Object[i]->b,
 					draw_Object[i]->a,
-					team1Texture);
+					team1BuildingTexture,
+					BULDING);
+				renderer->DrawSolidRectGauge(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos+60,
+					draw_Object[i]->zpos,
+					80,10,
+					1,
+					0,
+					0,
+					1,
+					1,
+					BULDING);
 			}
 			else if(draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->team == TEAM_2)
 			{
@@ -210,9 +230,71 @@ void SceneMgr::DrawRect()
 					draw_Object[i]->g,
 					draw_Object[i]->b,
 					draw_Object[i]->a,
-					team2Texture);
+					team2BuildingTexture,
+					BULDING);
+				renderer->DrawSolidRectGauge(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos + 60,
+					draw_Object[i]->zpos,
+					80, 10,
+					0,
+					0,
+					1,
+					1,
+					1,
+					BULDING);
 			}
-			else
+			else if(draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->team == TEAM_1)
+			{
+				renderer->DrawTexturedRect(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos,
+					draw_Object[i]->zpos,
+					draw_Object[i]->size,
+					draw_Object[i]->r,
+					draw_Object[i]->g,
+					draw_Object[i]->b,
+					draw_Object[i]->a,
+					team1CharaterTexture,
+					CHARACTER);
+				renderer->DrawSolidRectGauge(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos + 40,
+					draw_Object[i]->zpos,
+					20, 2,
+					1,
+					0,
+					0,
+					1,
+					1,
+					CHARACTER);
+			}
+			else if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->team == TEAM_2)
+			{
+				renderer->DrawTexturedRect(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos,
+					draw_Object[i]->zpos,
+					draw_Object[i]->size,
+					draw_Object[i]->r,
+					draw_Object[i]->g,
+					draw_Object[i]->b,
+					draw_Object[i]->a,
+					team2CharaterTexture,
+					CHARACTER);
+				renderer->DrawSolidRectGauge(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos + 40,
+					draw_Object[i]->zpos,
+					20, 2,
+					0,
+					0,
+					1,
+					1,
+					1,
+					CHARACTER);
+			}
+			else if (draw_Object[i]->type == OBJECT_ARROW)
 			{
 				renderer->DrawSolidRect(
 					draw_Object[i]->xpos,
@@ -222,7 +304,21 @@ void SceneMgr::DrawRect()
 					draw_Object[i]->r,
 					draw_Object[i]->g,
 					draw_Object[i]->b,
-					draw_Object[i]->a);
+					draw_Object[i]->a,
+					ARROW);
+			}
+			else if (draw_Object[i]->type == OBJECT_BULLET)
+			{
+				renderer->DrawSolidRect(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos,
+					draw_Object[i]->zpos,
+					draw_Object[i]->size,
+					draw_Object[i]->r,
+					draw_Object[i]->g,
+					draw_Object[i]->b,
+					draw_Object[i]->a,
+					BULLET);
 			}
 			
 		}
@@ -266,7 +362,7 @@ void SceneMgr::DoCollisionTest()
 						if (draw_Object[i]->team == draw_Object[j]->team)
 							continue;
 						collisionCount++;
-						if (draw_Object[i]->id < 10 && draw_Object[j]->id < 10)
+						if (draw_Object[i]->type==1 && draw_Object[j]->type ==1)
 							continue;
 						
 						draw_Object[i]->damage = draw_Object[j]->life;										

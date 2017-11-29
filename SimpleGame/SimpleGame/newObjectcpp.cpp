@@ -32,25 +32,51 @@ void newObject::Update(float elapsedTime)
 
 	xpos = xpos + vxpos * elapsedTimeInSecond;
 	ypos = ypos + vypos * elapsedTimeInSecond;	
-	if (xpos > 250)
+	if (type == 1)
 	{
-		vxpos = -vxpos;
-	}
+		if (xpos >= 250)
+		{
+			vxpos = -vxpos;
+		}
 
-	if (xpos < -250)
-	{
-		vxpos = -vxpos;
-	}
+		if (xpos <= -250)
+		{
+			vxpos = -vxpos;
+		}
 
-	if (ypos > 400)
-	{
-		vypos = -vypos;
-	}
+		if (ypos >= 400)
+		{
+			vypos = -vypos;
+		}
 
-	if (ypos < -400)
+		if (ypos <= -400)
+		{
+			vypos = -vypos;
+		}
+	}
+	else
 	{
-		vypos = -vypos;
-	}	
+		if (xpos > 250)
+		{
+			life = 0;
+		}
+
+		if (xpos < -250)
+		{
+			life = 0;
+		}
+
+		if (ypos > 400)
+		{
+			life = 0;
+		}
+
+		if (ypos < -400)
+		{
+			life = 0;
+		}
+	}
+	
 }
 
 
@@ -63,6 +89,7 @@ float newObject::GetLifeTime()
 {
 	return lifetime;
 }
+
 float newObject::SetLife()
 {
 	life = life - damage;
@@ -90,9 +117,9 @@ void newObject::setColor(int ty)
 		
 		break;
 	case 2:
-		r = 0.0f;
-		g = 0.0f;
-		b = 0.0f;
+		r = 1.0f;
+		g = 1.0f;
+		b = 1.0f;
 		break;
 	case 3:
 		if (team == 1)
