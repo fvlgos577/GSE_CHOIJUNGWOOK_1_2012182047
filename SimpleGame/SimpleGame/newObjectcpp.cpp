@@ -7,9 +7,10 @@ newObject::newObject(float x, float y, float lf, float sp,int si, int ty,int i ,
 	xpos = x;
 	ypos = y;
 	zpos = 0;
-	vxpos = sp *(((float)std::rand() / (float)RAND_MAX) - 0.5f);
-	vypos = sp *(((float)std::rand() / (float)RAND_MAX) - 0.5f);
-
+	speed = sp;
+	vxpos = ((float)std::rand() / (float)RAND_MAX - 0.5f);
+	vypos = (float)sqrt(1 - (vxpos * vxpos));
+	
 	size = si;
 	r = 1;
 	g = 1;
@@ -18,6 +19,9 @@ newObject::newObject(float x, float y, float lf, float sp,int si, int ty,int i ,
 	id = i;
 	type = ty;
 	team = ti;
+
+	if (team == 1)
+		vypos *= -1;
 	life = lf;
 	lifetime = 10000000.f;
 }
@@ -30,8 +34,8 @@ void newObject::Update(float elapsedTime)
 {
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
 
-	xpos = xpos + vxpos * elapsedTimeInSecond;
-	ypos = ypos + vypos * elapsedTimeInSecond;	
+	xpos = xpos + vxpos * elapsedTimeInSecond * speed;
+	ypos = ypos + vypos * elapsedTimeInSecond * speed;	
 	if (type == 1)
 	{
 		if (xpos >= 250)
