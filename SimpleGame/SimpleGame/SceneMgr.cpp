@@ -1,25 +1,7 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 
-#define MAX_OBJECTS_CHARATER_COUNT 10
-#define MAX_OBJECTS_BUILDING_COUNT 10
-#define MAX_OBJECTS_BULLET_COUNT 10
-#define MAX_OBJECTS_ARROW_COUNT 10
-#define MAX_OBJECTS 500
-#define OBJECT_CHARACTER 1
-#define OBJECT_BUILDING 2
-#define OBJECT_BULLET 3
-#define OBJECT_ARROW 4
 
-#define BACKGOURND 0.99
-
-#define BULDING 0.1
-#define CHARACTER 0.2
-#define BULLET 0.3
-#define ARROW 0.3
-
-#define TEAM_1 1
-#define TEAM_2 2
 GLuint team1BuildingTexture = 0;
 GLuint team2BuildingTexture = 0;
 GLuint team1CharaterTexture = 0;
@@ -33,16 +15,25 @@ float ranYpos = 0;
 
 int team1_character = 0;
 int team2_character = 0;
+
+int soundBullet = 0;
+int soundArrow = 0;
+int soundBG = 0;
+
 SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 {
 	// Initialize Renderer
 	renderer = new Renderer(windowSizeX, windowSizeY);
+	sound = new Sound();
 	team1BuildingTexture = renderer->CreatePngTexture("./Textures/team1_building.png");
 	team2BuildingTexture = renderer->CreatePngTexture("./Textures/team2_building.png");
 	team1CharaterTexture = renderer->CreatePngTexture("./Textures/character1.png");
 	team2CharaterTexture = renderer->CreatePngTexture("./Textures/character2.png");
 	background = renderer->CreatePngTexture("./Textures/background.png");
 	bullet = renderer->CreatePngTexture("./Textures/bullet.png");
+	soundBG = sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
+	soundBullet = sound->CreateSound("./Dependencies/SoundSamples/FX061.mp3");
+	soundArrow = sound->CreateSound("./Dependencies/SoundSamples/FX063.mp3");
 	if (!renderer->IsInitialized())
 	{
 		std::cout << "SceneMgr::Renderer could not be initialized.. \n";
@@ -61,11 +52,13 @@ SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 		AddActorObject((i*200) -200, -300, OBJECT_BUILDING, 0);
 		AddActorObject((i * 200) - 200, +300, OBJECT_BUILDING, 0);
 	}	
+	sound->PlaySound(soundBG, true, 0.2f);
 }
 SceneMgr::~SceneMgr()
 {
 	delete renderer;
 	delete[] draw_Object;
+	delete sound;
 }
 void SceneMgr::setxy(int x, int y)
 {
@@ -93,7 +86,7 @@ void SceneMgr::AllUpdate(float elapsedTime)
 	//srand(100);
 	ranXpos = (rand() % 751) - 250;
 	ranYpos = (rand() % 401);
-	if (collDownTime2 >= 10000)
+	if (collDownTime2 >= 1000)
 	{
 		AddActorObject(ranXpos, ranYpos, OBJECT_CHARACTER, 0);
 		collDownTime2 = 0;
@@ -113,12 +106,16 @@ void SceneMgr::AllUpdate(float elapsedTime)
 				
 				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_BULLET, i);				
 				draw_Object[i]->resetTime();
+				sound->PlaySound(soundBullet, false, 0.4f);
+				
+
 			}
 			if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->delay >= 500)
 			{
 
 				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_ARROW, i);
 				draw_Object[i]->resetTime();
+				sound->PlaySound(soundArrow, false, 0.4f);
 			}
 			if (draw_Object[i]->GetLife() <0.0001f || draw_Object[i]->GetLifeTime() < 0.0001f)
 			{
@@ -369,7 +366,9 @@ void SceneMgr::DrawRect()
 		}
 			
 	}
-	
+
+	renderer->DrawTextW(-60, 200,GLUT_BITMAP_TIMES_ROMAN_24, 0, 0, 1, "TEAM RED");
+	renderer->DrawTextW(-70, -200, GLUT_BITMAP_TIMES_ROMAN_24, 1, 0, 0, "TEAM BLUE");
 }
 
 void SceneMgr::DoCollisionTest()

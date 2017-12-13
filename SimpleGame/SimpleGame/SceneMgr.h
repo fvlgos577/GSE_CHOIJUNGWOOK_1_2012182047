@@ -1,6 +1,7 @@
 #pragma once
 
 #include "newObject.h"
+#include "Sound.h"
 #include <stdio.h>
 #define MAX_OBJECTS_COUNT 500
 
@@ -12,7 +13,7 @@ private:
 	void DoCollisionTest();
 	
 	Renderer *renderer;
-
+	Sound *sound;
 	int width;
 	int height;
 	
