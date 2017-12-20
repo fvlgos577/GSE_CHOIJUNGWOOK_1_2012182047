@@ -9,6 +9,7 @@ private:
 
 	float speed;		// 이동속도
 	float weight;		// 무게
+	
 	Renderer *renderer;
 	
 
@@ -17,7 +18,7 @@ public:
 	~newObject();
 	// 렌더러 포인터
 	
-
+	float delay = 0;
 	float GetLife();
 	float GetLifeTime();
 	float SetLife();
@@ -37,7 +38,7 @@ public:
 	int type;
 	float life;
 	float lifetime;
-	float delay;
+	
 	float damage;
 	int team;
 	int id;
@@ -51,6 +52,7 @@ public:
 	void	setColor(int type);
 
 	void	CheckTime(float elapsedTime);
+	float	GetTime();
 	void	resetTime();
 	void	Update(float elapsedTime);
 };

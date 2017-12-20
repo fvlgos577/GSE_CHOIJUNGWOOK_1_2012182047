@@ -15,7 +15,7 @@
 #define OBJECT_BUILDING 2
 #define OBJECT_BULLET 3
 #define OBJECT_ARROW 4
-
+#define OBJECT_WEATHER 5
 #define BACKGOURND 0.99
 
 #define BULDING 0.1

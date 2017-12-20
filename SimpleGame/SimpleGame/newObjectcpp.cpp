@@ -153,7 +153,13 @@ void newObject::setColor(int ty)
 			b = 0.0f;
 		}
 		break;
+	case 5:
+		r = 1.0f;
+		g = 1.0f;
+		b = 1.0f;
+		break;
 	}
+	
 
 
 }
@@ -161,6 +167,10 @@ void newObject::setColor(int ty)
 void newObject::CheckTime(float elapsedTime)
 {
 	delay += elapsedTime;	
+}
+float newObject::GetTime()
+{
+	return delay;
 }
 void newObject::resetTime()
 {

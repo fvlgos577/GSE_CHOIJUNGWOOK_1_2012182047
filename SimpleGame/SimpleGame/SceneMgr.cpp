@@ -8,6 +8,7 @@ GLuint team1CharaterTexture = 0;
 GLuint team2CharaterTexture = 0;
 GLuint background = 0;
 GLuint bullet = 0;
+GLuint weather = 0;
 float collDownTime = 0;
 float collDownTime2 = 0;
 float ranXpos = 0;
@@ -31,6 +32,7 @@ SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 	team2CharaterTexture = renderer->CreatePngTexture("./Textures/character2.png");
 	background = renderer->CreatePngTexture("./Textures/background.png");
 	bullet = renderer->CreatePngTexture("./Textures/bullet.png");
+	weather = renderer->CreatePngTexture("./Textures/fire_rain.png");
 	soundBG = sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
 	soundBullet = sound->CreateSound("./Dependencies/SoundSamples/FX061.mp3");
 	soundArrow = sound->CreateSound("./Dependencies/SoundSamples/FX063.mp3");
@@ -46,12 +48,15 @@ SceneMgr::SceneMgr(int windowSizeX, int windowSizeY)
 	{
 		draw_Object[i] = NULL;
 		
+		
 	}	
+	AddActorObject(0,0, OBJECT_WEATHER, 0);
 	for (int i = 0; i < 3; ++i)
 	{
 		AddActorObject((i*200) -200, -300, OBJECT_BUILDING, 0);
 		AddActorObject((i * 200) - 200, +300, OBJECT_BUILDING, 0);
 	}	
+	
 	sound->PlaySound(soundBG, true, 0.2f);
 }
 SceneMgr::~SceneMgr()
@@ -86,7 +91,7 @@ void SceneMgr::AllUpdate(float elapsedTime)
 	//srand(100);
 	ranXpos = (rand() % 751) - 250;
 	ranYpos = (rand() % 401);
-	if (collDownTime2 >= 1000)
+	if (collDownTime2 >= 3000)
 	{
 		AddActorObject(ranXpos, ranYpos, OBJECT_CHARACTER, 0);
 		collDownTime2 = 0;
@@ -97,11 +102,11 @@ void SceneMgr::AllUpdate(float elapsedTime)
 		if (draw_Object[i] != NULL)
 		{
 			draw_Object[i]->SetLife();
-			if(draw_Object[i]->type== OBJECT_BULLET)
-				draw_Object[i]->CheckTime(1);
+			if(draw_Object[i]->type== OBJECT_BULLET || draw_Object[i]->type == OBJECT_WEATHER)
+				draw_Object[i]->CheckTime(0.001);
 			else
 				draw_Object[i]->CheckTime(elapsedTime);
-			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->delay >= 5000)
+			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->GetTime() >= 5000)
 			{
 				
 				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_BULLET, i);				
@@ -110,7 +115,7 @@ void SceneMgr::AllUpdate(float elapsedTime)
 				
 
 			}
-			if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->delay >= 500)
+			if (draw_Object[i]->type == OBJECT_CHARACTER && draw_Object[i]->GetTime() >= 500)
 			{
 
 				AddActorObject(draw_Object[i]->xpos, draw_Object[i]->ypos, OBJECT_ARROW, i);
@@ -144,13 +149,13 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 			{
 				if (y > 0)
 				{
-					draw_Object[i] = new newObject(x, y, 100.f, 300.f, 30, OBJECT_CHARACTER, i, TEAM_1);
+					draw_Object[i] = new newObject(x, y, 50.f, 100.f, 30, OBJECT_CHARACTER, i, TEAM_1);				
 					draw_Object[i]->setColor(OBJECT_CHARACTER);
 					break;
 				}
 				else
 				{
-					draw_Object[i] = new newObject(x, y, 100.f, 300.f, 30, OBJECT_CHARACTER, i, TEAM_2);
+					draw_Object[i] = new newObject(x, y, 50.f, 100.f, 30, OBJECT_CHARACTER, i, TEAM_2);					
 					draw_Object[i]->setColor(OBJECT_CHARACTER);
 					break;
 				}
@@ -165,13 +170,13 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 			{
 				if (y > 0)
 				{
-					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_1);
+					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_1);					
 					draw_Object[i]->setColor(OBJECT_BUILDING);
 					break;
 				}
 				else
 				{
-					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_2);
+					draw_Object[i] = new newObject(x, y, 500.f, 0, 100, OBJECT_BUILDING, i, TEAM_2);				
 					draw_Object[i]->setColor(OBJECT_BUILDING);
 					break;
 				}
@@ -181,11 +186,11 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 	}
 	if (type == OBJECT_BULLET)
 	{
-		for (int i = 120; i < 300; ++i)
+		for (int i = 120; i < 250; ++i)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 15, 300.f, 10, OBJECT_BULLET, id, draw_Object[id]->team);
+				draw_Object[i] = new newObject(x, y, 15, 80.f, 10, OBJECT_BULLET, id, draw_Object[id]->team);			
 				draw_Object[i]->setColor(OBJECT_BULLET);
 				break;
 			}
@@ -197,8 +202,20 @@ void SceneMgr::AddActorObject(int x, int y, int type, int id)
 		{
 			if (draw_Object[i] == NULL)
 			{
-				draw_Object[i] = new newObject(x, y, 10, 100.f, 4, OBJECT_ARROW,id, draw_Object[id]->team);
+				draw_Object[i] = new newObject(x, y, 10, 70.f, 4, OBJECT_ARROW,id, draw_Object[id]->team);				
 				draw_Object[i]->setColor(OBJECT_ARROW);
+				break;
+			}
+		}
+	}
+	if (type == OBJECT_WEATHER)
+	{
+		for (int i = 250; i < 300; ++i)
+		{
+			if (draw_Object[i] == NULL)
+			{
+				draw_Object[i] = new newObject(x, y, 10, 1.0f, 3, OBJECT_WEATHER, id,0);
+				draw_Object[i]->setColor(OBJECT_WEATHER);
 				break;
 			}
 		}
@@ -225,7 +242,7 @@ void SceneMgr::DrawRect()
 		if (draw_Object[i] != NULL)
 		{			
 			if (draw_Object[i]->type == OBJECT_BUILDING && draw_Object[i]->team == TEAM_1)
-			{
+			{				
 				renderer->DrawTexturedRect(
 					draw_Object[i]->xpos,
 					draw_Object[i]->ypos,
@@ -346,7 +363,7 @@ void SceneMgr::DrawRect()
 					ARROW);
 			}
 			else if (draw_Object[i]->type == OBJECT_BULLET)
-			{
+			{				
 				renderer->DrawParticle(
 					draw_Object[i]->xpos,
 					draw_Object[i]->ypos,
@@ -359,16 +376,37 @@ void SceneMgr::DrawRect()
 					-draw_Object[i]->vxpos,
 					-draw_Object[i]->vypos,
 					bullet,
-					draw_Object[i]->delay
+					draw_Object[i]->GetTime(),
+					BULLET - 0.01
 				);
 			}
+
+			else if (draw_Object[i]->type == OBJECT_WEATHER)
+			{
+				renderer->DrawParticleClimate(
+					draw_Object[i]->xpos,
+					draw_Object[i]->ypos,
+					draw_Object[i]->zpos,
+					draw_Object[i]->size,
+					draw_Object[i]->r,
+					draw_Object[i]->g,
+					draw_Object[i]->b,
+					draw_Object[i]->a,
+					-draw_Object[i]->vxpos,
+					-draw_Object[i]->vypos,
+					weather,
+					draw_Object[i]->GetTime(),
+					BULLET - 0.01
+				);
+			}
+			
 			
 		}
 			
 	}
 
-	renderer->DrawTextW(-60, 200,GLUT_BITMAP_TIMES_ROMAN_24, 0, 0, 1, "TEAM RED");
-	renderer->DrawTextW(-70, -200, GLUT_BITMAP_TIMES_ROMAN_24, 1, 0, 0, "TEAM BLUE");
+	renderer->DrawTextW(-25, 200, GLUT_BITMAP_HELVETICA_18, 0, 0, 1, "TEAM RED");
+	renderer->DrawTextW(-35, -200, GLUT_BITMAP_HELVETICA_18, 1, 0, 0, "TEAM BLUE");
 }
 
 void SceneMgr::DoCollisionTest()
